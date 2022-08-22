@@ -8,12 +8,13 @@ module.exports = (passport) => {
       {
         clientID: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/google/callback",
+        callbackURL:
+          "https://twitter-clone-aj.herokuapp.com/auth/google/callback",
         passReqToCallback: true,
       },
       async (request, accessToken, refreshToken, profile, done) => {
         try {
-          let existingUser = await User.findOne({ "googleId" : profile.id });
+          let existingUser = await User.findOne({ googleId: profile.id });
           if (existingUser) {
             request.session.user = existingUser;
             return done(null, existingUser);
@@ -22,12 +23,11 @@ module.exports = (passport) => {
           console.log("Creating a new user...");
 
           const newUser = new User({
-              googleId: profile.id,
-              username: profile.displayName,
-              email: profile.emails[0].value,
-              firstName: profile.name.givenName,
-              lastName: profile.name.familyName,
-            
+            googleId: profile.id,
+            username: profile.displayName,
+            email: profile.emails[0].value,
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
           });
 
           await newUser.save();
